@@ -1,0 +1,77 @@
+import json
+import os
+
+DATA_FILE = "tasks.json"
+
+def load_data():
+    if os.path.isfile(DATA_FILE):
+        with open(DATA_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def store_data(task_list):
+    with open(DATA_FILE, 'w') as f:
+        json.dump(task_list, f, indent=2)
+
+def display_tasks(task_list):
+    if not task_list:
+        print("Your task list is empty.")
+    else:
+        for idx, item in enumerate(task_list, start=1):
+            status = "Done" if item['completed'] else "Pending"
+            print(f"{idx}. [{status}] {item['title']}")
+
+def run_todo_app():
+    task_list = load_data()
+    
+    while True:
+        print("\n==== To-Do Menu ====")
+        print("1. Add New Task")
+        print("2. Show All Tasks")
+        print("3. Mark Task as Done")
+        print("4. Remove Task")
+        print("5. Quit")
+
+        user_input = input("Select option (1-5): ")
+
+        if user_input == "1":
+            title = input("Enter task name: ").strip()
+            if title:
+                task_list.append({"title": title, "completed": False})
+                store_data(task_list)
+                print("Task added.")
+        elif user_input == "2":
+            display_tasks(task_list)
+        elif user_input == "3":
+            display_tasks(task_list)
+            try:
+                number = int(input("Enter task number to mark complete: "))
+                if 1 <= number <= len(task_list):
+                    task_list[number - 1]['completed'] = True
+                    store_data(task_list)
+                    print("Task marked as done.")
+            except ValueError:
+                print("Please enter a valid number.")
+        elif user_input == "4":
+            display_tasks(task_list)
+            try:
+                number = int(input("Enter task number to delete: "))
+                if 1 <= number <= len(task_list):
+                    removed = task_list.pop(number - 1)
+                    store_data(task_list)
+                    print(f"Removed: {removed['title']}")
+            except ValueError:
+                print("Invalid input.")
+        elif user_input == "5":
+            print("Exiting To-Do List. Goodbye!")
+            break
+        else:
+            print("Invalid option. Please choose between 1 and 5.")
+
+# Entry point
+if __name__ == "__main__":
+    run_todo_app()
+
+
+
+
